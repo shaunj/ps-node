@@ -2,6 +2,7 @@ var PS = require('../index');
 var CP = require('child_process');
 var assert = require('assert');
 var Path = require('path');
+var IS_WIN = process.platform === 'win32';
 
 var serverPath = Path.resolve(__dirname, './node_process_for_test.js');
 var UpperCaseArg = '--UPPER_CASE';
@@ -101,33 +102,35 @@ describe('test', function () {
       });
     });
 
-    it('should force kill when opts.signal is 9', function (done) {
-      startProcess();
-
-      PS.kill(pid, {signal: 9}, function (err) {
-        assert.equal(err, null);
-        PS.lookup({pid: String(pid)}, function (err, list) {
-          assert.equal(list.length, 0);
-          done();
-        });
-      });
-    });
-
-    it('should throw error when opts.signal is invalid', function (done) {
-      startProcess();
-      PS.kill(pid, {signal: 'INVALID'}, function (err) {
-        assert.notEqual(err, null);
-        PS.kill(pid, function(){
-            done();
-        });
-      });
-    });
-
     it('should not throw an exception if the callback is undefined', function (done) {
       assert.doesNotThrow(function () {
         PS.kill(pid);
         setTimeout(done, 400);
       });
     });
+
+    if (!IS_WIN) {
+      it('should force kill when opts.signal is 9', function (done) {
+        startProcess();
+
+        PS.kill(pid, {signal: 9}, function (err) {
+          assert.equal(err, null);
+          PS.lookup({pid: String(pid)}, function (err, list) {
+            assert.equal(list.length, 0);
+            done();
+          });
+        });
+      });
+
+      it('should throw error when opts.signal is invalid', function (done) {
+        startProcess();
+        PS.kill(pid, {signal: 'INVALID'}, function (err) {
+          assert.notEqual(err, null);
+          PS.kill(pid, function(){
+            done();
+          });
+        });
+      });
+    }
   });
 });
