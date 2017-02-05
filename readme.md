@@ -1,5 +1,4 @@
-# ps@0.1.3 [![Build Status](https://travis-ci.org/neekey/ps.svg?branch=master)](https://travis-ci.org/neekey/ps) [![Build status](https://ci.appveyor.com/api/projects/status/fhom8ot12b6jxeyt?svg=true)](https://ci.appveyor.com/project/neekey/ps)
-
+# ps@0.1.5 [![Build Status](https://travis-ci.org/neekey/ps.svg?branch=master)](https://travis-ci.org/neekey/ps) [![Build status](https://ci.appveyor.com/api/projects/status/fhom8ot12b6jxeyt?svg=true)](https://ci.appveyor.com/project/neekey/ps)
 
 A Node.js module for looking up running processes. This module uses [Table-Parser](https://github.com/neekey/table-parser) to parse the output.
 
