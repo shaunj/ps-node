@@ -14,6 +14,12 @@ function startProcess() {
   pid = child.pid;
 }
 
+function killProcess() {
+  if (process.kill(pid, 0)) {
+    process.kill(pid);
+  }
+}
+
 describe('test', function () {
   before(function (done) {
     PS.lookup({arguments: 'node_process_for_test'}, function (err, list) {
@@ -24,19 +30,21 @@ describe('test', function () {
           PS.kill(item.pid, function () {
             killedCount++;
             if (killedCount === processLen) {
-              startProcess();
               done();
             }
           });
         });
       } else {
-        startProcess();
         done();
       }
     });
   });
 
+  beforeEach(startProcess);
+
   describe('#lookup()', function () {
+
+    afterEach(killProcess);
 
     it('by id', function (done) {
       PS.lookup({pid: String(pid)}, function (err, list) {
@@ -92,7 +100,6 @@ describe('test', function () {
   describe('#kill()', function () {
 
     it('kill', function (done) {
-
       PS.kill(pid, function (err) {
         assert.equal(err, null);
         PS.lookup({pid: String(pid)}, function (err, list) {
@@ -111,8 +118,6 @@ describe('test', function () {
 
     if (!IS_WIN) {
       it('should force kill when opts.signal is 9', function (done) {
-        startProcess();
-
         PS.kill(pid, {signal: 9}, function (err) {
           assert.equal(err, null);
           PS.lookup({pid: String(pid)}, function (err, list) {
@@ -123,7 +128,6 @@ describe('test', function () {
       });
 
       it('should throw error when opts.signal is invalid', function (done) {
-        startProcess();
         PS.kill(pid, {signal: 'INVALID'}, function (err) {
           assert.notEqual(err, null);
           PS.kill(pid, function(){
