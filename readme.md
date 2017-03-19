@@ -90,13 +90,13 @@ ps.kill( '12345', function( err ) {
 });
 ```
 
-Method `kill` also supports a `signal` option to be passed. This **only** works on Linux/Mac. For a list of all available signals on your system type `kill -l` in your console.
+Method `kill` also supports a `signal` option to be passed. It's only a wrapper of `process.kill()` with checking of that killing is finished after the method is called.
 
 ```javascript
 var ps = require('ps-node');
 
-//Pass signal 9 for killing the process witout allowing it to clean up
-ps.kill( '12345', { signal: 9 }, function( err ) {
+// Pass signal SIGKILL for killing the process without allowing it to clean up
+ps.kill( '12345', 'SIGKILL', function( err ) {
     if (err) {
         throw new Error( err );
     }
@@ -106,6 +106,14 @@ ps.kill( '12345', { signal: 9 }, function( err ) {
 });
 ```
 
+To be compatible with prior versions, you can use object as the second parameter:
+
+```js
+ps.kill( '12345', { signal: 'SIGKILL' }, function(){});
+
+```
+
+Notice that the nodejs build-in `process.kill()` does not accept number as the signal, you will have to use string format.
 
 
 You can also pass arguments to `lookup` with `psargs` as arguments for `ps` command（Note that `psargs` is not available in windows):

@@ -117,8 +117,8 @@ describe('test', function () {
     });
 
     if (!IS_WIN) {
-      it('should force kill when opts.signal is 9', function (done) {
-        PS.kill(pid, {signal: 9}, function (err) {
+      it('should force kill when opts.signal is SIGKILL', function (done) {
+        PS.kill(pid, {signal: 'SIGKILL'}, function (err) {
           assert.equal(err, null);
           PS.lookup({pid: String(pid)}, function (err, list) {
             assert.equal(list.length, 0);
