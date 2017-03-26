@@ -1,6 +1,6 @@
 {
   "name": "ps-node",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A process lookup utility",
   "main": "index.js",
   "repository": {

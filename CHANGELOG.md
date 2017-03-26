@@ -1,3 +1,11 @@
+## [2017-03-26](https://github.com/neekey/ps/pull/35)
+- publish 0.1.5
+- Add parent process ID support for windows
+- use `spawn` to replace `exec` for Linux/Unix system
+- add appVeyor integration
+- use Travis for npm publishing
+- refactor the implementation of `kill()`, now just a wrapper of built-in `process.kill()`
+
 ## 2016-06-23
 - Publish 0.1.2
 - change `command` and `argument` matching to case insensitive.
