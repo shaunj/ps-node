@@ -2,7 +2,6 @@ var PS = require('../index');
 var CP = require('child_process');
 var assert = require('assert');
 var Path = require('path');
-var IS_WIN = process.platform === 'win32';
 
 var serverPath = Path.resolve(__dirname, './node_process_for_test.js');
 var UpperCaseArg = '--UPPER_CASE';
@@ -18,6 +17,16 @@ function killProcess() {
   if (process.kill(pid, 0)) {
     process.kill(pid);
   }
+}
+
+var processKill = process.kill;
+
+function mockKill() {
+  process.kill = function() {};
+}
+
+function restoreKill() {
+  process.kill = processKill;
 }
 
 describe('test', function () {
@@ -97,10 +106,11 @@ describe('test', function () {
     });
   });
 
-  for (var i = 0; i < 20; i++) {
-    describe('#kill() test round: ' + i, function () {
+  describe('#kill()', function () {
 
-      it('kill', function (done) {
+    it('kill', function (done) {
+      PS.lookup({pid: pid}, function (err, list) {
+        assert.equal(list.length, 1);
         PS.kill(pid, function (err) {
           assert.equal(err, null);
           PS.lookup({pid: pid}, function (err, list) {
@@ -109,15 +119,20 @@ describe('test', function () {
           });
         });
       });
+    });
 
-      it('should not throw an exception if the callback is undefined', function (done) {
-        assert.doesNotThrow(function () {
-          PS.kill(pid);
-          setTimeout(done, 400);
+    it('should not throw an exception if the callback is undefined', function (done) {
+      assert.doesNotThrow(function () {
+        PS.kill(pid);
+        PS.kill(pid, function() {
+          done();
         });
       });
+    });
 
-      it('should force kill when opts.signal is SIGKILL', function (done) {
+    it('should force kill when opts.signal is SIGKILL', function (done) {
+      PS.lookup({pid: pid}, function (err, list) {
+        assert.equal(list.length, 1);
         PS.kill(pid, {signal: 'SIGKILL'}, function (err) {
           assert.equal(err, null);
           PS.lookup({pid: pid}, function (err, list) {
@@ -126,8 +141,11 @@ describe('test', function () {
           });
         });
       });
+    });
 
-      it('should throw error when opts.signal is invalid', function (done) {
+    it('should throw error when opts.signal is invalid', function (done) {
+      PS.lookup({pid: pid}, function (err, list) {
+        assert.equal(list.length, 1);
         PS.kill(pid, {signal: 'INVALID'}, function (err) {
           assert.notEqual(err, null);
           PS.kill(pid, function(){
@@ -136,5 +154,39 @@ describe('test', function () {
         });
       });
     });
-  }
+  });
+
+  describe('#kill() timeout: ', function () {
+    it('it should timeout after 30secs by default if the killing is not successful', function(done) {
+      mockKill();
+      var killStartDate = Date.now();
+      PS.lookup({pid: pid}, function (err, list) {
+        assert.equal(list.length, 1);
+        PS.kill(pid, function (err) {
+          assert.equal(Date.now() - killStartDate >= 30 * 1000, true);
+          assert.equal(err.message.indexOf('timeout') >= 0, true);
+          restoreKill();
+          PS.kill(pid, function(){
+            done();
+          });
+        });
+      });
+    });
+
+    it('it should be able to set option to set the timeout', function(done) {
+      mockKill();
+      var killStartDate = Date.now();
+      PS.lookup({pid: pid}, function (err, list) {
+        assert.equal(list.length, 1);
+        PS.kill(pid, { timeout: 5 }, function (err) {
+          assert.equal(Date.now() - killStartDate >= 5 * 1000, true);
+          assert.equal(err.message.indexOf('timeout') >= 0, true);
+          restoreKill();
+          PS.kill(pid, function(){
+            done();
+          });
+        });
+      });
+    });
+  });
 });
