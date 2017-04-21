@@ -2,6 +2,7 @@ var PS = require('../index');
 var CP = require('child_process');
 var assert = require('assert');
 var Path = require('path');
+var Sinon = require('sinon');
 
 var serverPath = Path.resolve(__dirname, './node_process_for_test.js');
 var UpperCaseArg = '--UPPER_CASE';
@@ -159,6 +160,7 @@ describe('test', function () {
   describe('#kill() timeout: ', function () {
     it('it should timeout after 30secs by default if the killing is not successful', function(done) {
       mockKill();
+      var clock = Sinon.useFakeTimers();
       var killStartDate = Date.now();
       PS.lookup({pid: pid}, function (err, list) {
         assert.equal(list.length, 1);
@@ -167,14 +169,17 @@ describe('test', function () {
           assert.equal(err.message.indexOf('timeout') >= 0, true);
           restoreKill();
           PS.kill(pid, function(){
+            clock.restore();
             done();
           });
         });
+        clock.tick(30 * 1000);
       });
     });
 
     it('it should be able to set option to set the timeout', function(done) {
       mockKill();
+      var clock = Sinon.useFakeTimers();
       var killStartDate = Date.now();
       PS.lookup({pid: pid}, function (err, list) {
         assert.equal(list.length, 1);
@@ -183,9 +188,11 @@ describe('test', function () {
           assert.equal(err.message.indexOf('timeout') >= 0, true);
           restoreKill();
           PS.kill(pid, function(){
+            clock.restore();
             done();
           });
         });
+        clock.tick(5 * 1000);
       });
     });
   });
