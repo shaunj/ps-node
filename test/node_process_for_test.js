@@ -1,7 +1,10 @@
 var now = Date.now();
 console.log('[child] child process start!');
 
+function doSomething() {
+  return null;
+}
+
 setInterval(function () {
-  var interval = Date.now() - now;
-  console.log('[child] Timer finished, time consuming: ' + interval);
+  doSomething();
 }, 50);

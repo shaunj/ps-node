@@ -106,10 +106,13 @@ ps.kill( '12345', 'SIGKILL', function( err ) {
 });
 ```
 
-To be compatible with prior versions, you can use object as the second parameter:
+you can use object as the second parameter to pass more options:
 
 ```js
-ps.kill( '12345', { signal: 'SIGKILL' }, function(){});
+ps.kill( '12345', { 
+    signal: 'SIGKILL',
+    timeout: 10,  // will set up a ten seconds timeout if the killing is not successful
+}, function(){});
 
 ```
 
