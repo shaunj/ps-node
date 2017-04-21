@@ -1,3 +1,9 @@
+## [2017-04-21](https://github.com/neekey/ps/pull/48)
+- publish 0.1.6
+- use `lx` as default options for `ps` command
+- remove debugging console log for `kill()`
+- add timeout for `kill()`, default to 30s
+
 ## [2017-03-26](https://github.com/neekey/ps/pull/35)
 - publish 0.1.5
 - Add parent process ID support for windows
